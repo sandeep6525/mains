@@ -1,0 +1,16 @@
+/* Component level custom transitions and styles */
+.tab-enter {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.tab-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 250ms ease, transform 250ms ease;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--gold-500);
+  outline-offset: 2px;
+}
