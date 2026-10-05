@@ -86,14 +86,51 @@ export default function PYQVaultArchive({ onSelectQuestionForPractice, onLaunchM
     { code: "OPT-HINDI-LIT", label: "Hindi Literature (P1 & P2)" }
   ];
 
+  const availableData = React.useMemo(() => {
+    const yearToPapers = {};
+    const paperToYears = {};
+    
+    apiQuestions.forEach(q => {
+      const year = q.year;
+      const baseQCode = q.paper_code ? q.paper_code.replace(/-P[12]$/, '') : '';
+      let codesToRegister = [q.paper_code, baseQCode].filter(Boolean);
+      
+      if (baseQCode === "OPT-SOC") codesToRegister.push("OPT-SOCIO");
+      if (baseQCode === "OPT-COMMERCE") codesToRegister.push("OPT-COMM");
+
+      if (!yearToPapers[year]) yearToPapers[year] = new Set();
+      codesToRegister.forEach(c => {
+        yearToPapers[year].add(c);
+        if (!paperToYears[c]) paperToYears[c] = new Set();
+        paperToYears[c].add(year);
+      });
+    });
+    
+    return { yearToPapers, paperToYears };
+  }, [apiQuestions]);
+
+  const isPaperAvailable = (code) => {
+    if (code === "all") return true;
+    if (selectedYear === "all") return availableData.paperToYears[code] && availableData.paperToYears[code].size > 0;
+    return availableData.yearToPapers[selectedYear] && availableData.yearToPapers[selectedYear].has(code);
+  };
+
+  const isYearAvailable = (yr) => {
+    if (yr === "all") return true;
+    if (selectedPaper === "all") return availableData.yearToPapers[yr] && availableData.yearToPapers[yr].size > 0;
+    return availableData.paperToYears[selectedPaper] && availableData.paperToYears[selectedPaper].has(Number(yr));
+  };
+
   const filteredQuestions = apiQuestions.filter(q => {
     const matchesYear = selectedYear === "all" || q.year === Number(selectedYear);
     
     let matchesPaper = true;
     if (selectedPaper !== "all") {
+      const baseQCode = q.paper_code ? q.paper_code.replace(/-P[12]$/, '') : '';
       matchesPaper = q.paper_code === selectedPaper || 
-                     (selectedPaper === "OPT-SOCIO" && (q.paper_code === "OPT-SOC" || q.paper_code === "OPT-SOCIO")) ||
-                     (selectedPaper === "OPT-COMM" && (q.paper_code === "OPT-COMMERCE" || q.paper_code === "OPT-COMM"));
+                     baseQCode === selectedPaper ||
+                     (selectedPaper === "OPT-SOCIO" && (baseQCode === "OPT-SOC" || baseQCode === "OPT-SOCIO")) ||
+                     (selectedPaper === "OPT-COMM" && (baseQCode === "OPT-COMMERCE" || baseQCode === "OPT-COMM"));
     }
 
     let matchesGroup = true;
@@ -213,16 +250,20 @@ export default function PYQVaultArchive({ onSelectQuestionForPractice, onLaunchM
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600, whiteSpace: 'nowrap' }}>
                 Paper:
               </span>
-              {(selectedGroup === "optionals" ? optionalPapers : selectedGroup === "gs" ? gsPapers : [...gsPapers, ...optionalPapers]).map(p => (
-                <button
-                  key={p.code}
-                  onClick={() => setSelectedPaper(p.code)}
-                  className={`btn btn-sm ${selectedPaper === p.code ? 'btn-primary' : 'btn-secondary'}`}
-                  style={{ borderRadius: 'var(--radius-full)', padding: '4px 12px', fontSize: '0.75rem', whiteSpace: 'nowrap' }}
-                >
-                  {p.label}
-                </button>
-              ))}
+              {(selectedGroup === "optionals" ? optionalPapers : selectedGroup === "gs" ? gsPapers : [...gsPapers, ...optionalPapers]).map(p => {
+                const available = isPaperAvailable(p.code);
+                return (
+                  <button
+                    key={p.code}
+                    onClick={() => available && setSelectedPaper(p.code)}
+                    disabled={!available}
+                    className={`btn btn-sm ${selectedPaper === p.code ? 'btn-primary' : 'btn-secondary'}`}
+                    style={{ borderRadius: 'var(--radius-full)', padding: '4px 12px', fontSize: '0.75rem', whiteSpace: 'nowrap', opacity: available ? 1 : 0.5, cursor: available ? 'pointer' : 'not-allowed' }}
+                  >
+                    {p.label}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Year Selector Pills */}
@@ -230,16 +271,20 @@ export default function PYQVaultArchive({ onSelectQuestionForPractice, onLaunchM
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600, whiteSpace: 'nowrap' }}>
                 Year:
               </span>
-              {years.map(yr => (
-                <button
-                  key={yr}
-                  onClick={() => setSelectedYear(yr)}
-                  className={`btn btn-sm ${selectedYear === yr ? 'btn-primary' : 'btn-outline'}`}
-                  style={{ borderRadius: 'var(--radius-full)', padding: '4px 12px', fontSize: '0.75rem', whiteSpace: 'nowrap' }}
-                >
-                  {yr === "all" ? "All Years (10Y)" : yr}
-                </button>
-              ))}
+              {years.map(yr => {
+                const available = isYearAvailable(yr);
+                return (
+                  <button
+                    key={yr}
+                    onClick={() => available && setSelectedYear(yr)}
+                    disabled={!available}
+                    className={`btn btn-sm ${selectedYear === yr ? 'btn-primary' : 'btn-outline'}`}
+                    style={{ borderRadius: 'var(--radius-full)', padding: '4px 12px', fontSize: '0.75rem', whiteSpace: 'nowrap', opacity: available ? 1 : 0.5, cursor: available ? 'pointer' : 'not-allowed' }}
+                  >
+                    {yr === "all" ? "All Years (10Y)" : yr}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Search Input */}
@@ -318,7 +363,11 @@ export default function PYQVaultArchive({ onSelectQuestionForPractice, onLaunchM
               ))
             ) : (
               <div className="glass-card" style={{ padding: '30px', textAlign: 'center', gridColumn: '1 / -1' }}>
-                <p style={{ color: 'var(--text-muted)' }}>No questions match your current filters. Try changing the paper or year selection.</p>
+                <p style={{ color: 'var(--text-muted)' }}>
+                  {selectedPaper !== "all" && selectedYear !== "all" 
+                    ? `No PYQs are available for ${[...gsPapers, ...optionalPapers].find(p => p.code === selectedPaper)?.label || selectedPaper} in ${selectedYear}.`
+                    : "No questions match your current filters. Try changing the paper or year selection."}
+                </p>
               </div>
             )}
           </div>

@@ -30,6 +30,7 @@ import {
 import { PYQ_QUESTIONS } from '../data/pyqData';
 import { TEN_YEAR_PAPERS } from '../data/tenYearsPyqData';
 import { evaluateAnswerSubmission } from '../data/evaluationEngine';
+import { getQuestions } from '../services/api/questions';
 import OCRScannerModal from './OCRScannerModal';
 import RevisionWorkspaceModal from './RevisionWorkspaceModal';
 
@@ -78,18 +79,80 @@ const UNIFIED_QUESTIONS = [
   }))
 ].filter((q, index, self) => index === self.findIndex(t => t.id === q.id));
 
+import { useLanguage } from '../context/LanguageContext';
+
 export default function AnswerWritingStudio({ 
   selectedQuestionId, 
-  setSelectedQuestionId, 
-  language 
+  setSelectedQuestionId
 }) {
+  const { language, t, getQuestionText } = useLanguage();
   const [activeQuestion, setActiveQuestion] = useState(
     UNIFIED_QUESTIONS.find(q => q.id === selectedQuestionId) || UNIFIED_QUESTIONS[0]
   );
   
+  const [unifiedQuestions, setUnifiedQuestions] = useState(UNIFIED_QUESTIONS);
+  
   const [inputText, setInputText] = useState("");
   const [isOCRModalOpen, setIsOCRModalOpen] = useState(false);
   const [isRevisionModalOpen, setIsRevisionModalOpen] = useState(false);
+  
+  useEffect(() => {
+    getQuestions().then(apiQuestions => {
+      const fetchedUnified = [
+        ...apiQuestions,
+        ...TEN_YEAR_PAPERS.map(q => ({
+          id: q.id,
+          paper_id: `paper-${q.paper_code.toLowerCase()}`,
+          paper_code: q.paper_code,
+          topic_id: q.topic_id,
+          topic_title: `${q.subject}: ${q.topic_name}`,
+          year: q.year,
+          marks: q.marks,
+          word_limit: q.word_limit,
+          time_limit_mins: q.time_mins,
+          directive: q.directive,
+          directive_tip: `Examiner Directive: ${q.directive}. Blueprint Anchors: ${q.model_hints || 'Constitutional, theoretical, and empirical substantiation'}.`,
+          question_en: q.question_en,
+          question_hi: q.question_hi,
+          model_framework: {
+            introduction: `Contextualize the core premise of ${q.topic_name} and define key theoretical concepts.`,
+            dimensions: [
+              {
+                name: "Theoretical & Conceptual Anchors",
+                points: [
+                  q.model_hints || "Elucidate primary theoretical perspectives, statutes, or doctrines."
+                ]
+              },
+              {
+                name: "Empirical Analysis & Multi-Dimensional Impacts",
+                points: [
+                  "Examine critical structural challenges, governance implications, and contemporary debates."
+                ]
+              }
+            ],
+            citations: q.key_articles || ["UPSC Model Framework", "Supreme Court / Institutional Reports"],
+            conclusion: "Formulate a balanced, forward-looking synthesis addressing the core directive."
+          },
+          sample_submission: {
+            student_name: "Aspirant Demo Draft",
+            submission_date: "2026-09-24",
+            status: "Ready for Practice",
+            v1_text: `${q.question_en}\n\nI. Introduction:\nThe fundamental question pertains to ${q.topic_name}.\n\nII. Key Arguments:\n1. Core theoretical foundations and structural perspectives.\n2. Critical real-world challenges and empirical implications.\n\nIII. Way Forward & Conclusion:\nA comprehensive, evidence-backed strategy is essential for achieving institutional equilibrium.`
+          }
+        }))
+      ].filter((q, index, self) => index === self.findIndex(t => t.id === q.id));
+      
+      setUnifiedQuestions(fetchedUnified);
+      
+      if (selectedQuestionId) {
+        const q = fetchedUnified.find(item => item.id === selectedQuestionId);
+        if (q) {
+          setActiveQuestion(q);
+          setTimeLeft((q.time_limit_mins || 15) * 60);
+        }
+      }
+    });
+  }, []);
   
   // 360-Degree Evaluation Tab State
   // "risk_audit", "where_missed", "how_to_fix", "pillars_radar", "sme_feedback"
@@ -107,7 +170,7 @@ export default function AnswerWritingStudio({
 
   useEffect(() => {
     if (selectedQuestionId) {
-      const q = UNIFIED_QUESTIONS.find(item => item.id === selectedQuestionId);
+      const q = unifiedQuestions.find(item => item.id === selectedQuestionId);
       if (q) {
         setActiveQuestion(q);
         setTimeLeft((q.time_limit_mins || 15) * 60);
@@ -174,8 +237,8 @@ export default function AnswerWritingStudio({
   const targetWords = activeQuestion?.word_limit || 150;
 
   // Separate questions into GS vs Optionals for clean dropdown grouping
-  const gsQuestions = UNIFIED_QUESTIONS.filter(q => !q.paper_code.startsWith('OPT-'));
-  const optionalQuestions = UNIFIED_QUESTIONS.filter(q => q.paper_code.startsWith('OPT-'));
+  const gsQuestions = unifiedQuestions.filter(q => !q.paper_code.startsWith('OPT-'));
+  const optionalQuestions = unifiedQuestions.filter(q => q.paper_code.startsWith('OPT-'));
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -192,17 +255,17 @@ export default function AnswerWritingStudio({
               {activeQuestion.year} UPSC CSE
             </span>
             <span className="badge badge-emerald">
-              {activeQuestion.marks} Marks ({activeQuestion.word_limit} Words)
+              {activeQuestion.marks} {t("common.marks")} ({activeQuestion.word_limit} {t("common.words")})
             </span>
             <span className="badge badge-sky">
-              Directive: {activeQuestion.directive}
+              {t("answerStudio.directive")}: {activeQuestion.directive}
             </span>
           </div>
 
           {/* Question Switcher Dropdown */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-              {language === "hi" ? "प्रश्न चुनें:" : "Select Question:"}
+              {t("common.selectQuestion")}:
             </label>
             <select
               className="form-select"
@@ -210,19 +273,44 @@ export default function AnswerWritingStudio({
               onChange={(e) => handleQuestionChange(e.target.value)}
               style={{ flex: 1, width: '100%', maxWidth: '320px', padding: '6px 12px', fontSize: '0.82rem', textOverflow: 'ellipsis' }}
             >
-              <optgroup label="General Studies (GS I - IV & Essay)">
-                {gsQuestions.map(q => (
-                  <option key={q.id} value={q.id}>
-                    [{q.paper_code}] {q.year} - {q.topic_title} ({q.marks}M)
-                  </option>
-                ))}
+              <optgroup label={t("answerStudio.gsPapers")}>
+                {gsQuestions.map(q => {
+                  const qNum = q.question_number || parseInt(q.id.split('-').pop(), 10) || '?';
+                  let rawQuestion = getQuestionText(q);
+                  if (!rawQuestion || rawQuestion === 'TOPIC_MAPPING_PENDING') {
+                      rawQuestion = t("common.noTranslation");
+                  }
+                  const qText = rawQuestion.length > 60 ? rawQuestion.substring(0, 60) + '...' : rawQuestion;
+                  return (
+                    <option key={q.id} value={q.id}>
+                      [{q.paper_code}] {q.year} - {t("pyq.question")} {qNum} - {qText} ({q.marks}M)
+                    </option>
+                  );
+                })}
               </optgroup>
-              <optgroup label="Top 15 Optional Papers (Paper 1 & Paper 2)">
-                {optionalQuestions.map(q => (
-                  <option key={q.id} value={q.id}>
-                    [{q.paper_code}] {q.year} - {q.topic_title} ({q.marks}M)
-                  </option>
-                ))}
+              <optgroup label={t("answerStudio.optionalPapers")}>
+                {optionalQuestions.map(q => {
+                  const qNum = q.question_number || parseInt(q.id.split('-').pop(), 10) || '?';
+                  let rawQuestion = getQuestionText(q);
+                  if (!rawQuestion || rawQuestion === 'TOPIC_MAPPING_PENDING') {
+                      rawQuestion = t("common.noTranslation");
+                  }
+                  const qText = rawQuestion.length > 60 ? rawQuestion.substring(0, 60) + '...' : rawQuestion;
+                  
+                  const basePaperMatch = q.paper_code.match(/^(OPT-[A-Z]+)-P([12])$/);
+                  let displayCode = q.paper_code;
+                  let paperSuffix = '';
+                  if (basePaperMatch) {
+                      displayCode = basePaperMatch[1];
+                      paperSuffix = ` - Paper ${basePaperMatch[2]}`;
+                  }
+
+                  return (
+                    <option key={q.id} value={q.id}>
+                      [{displayCode}] {q.year}{paperSuffix} - {t("pyq.question")} {qNum} - {qText} ({q.marks}M)
+                    </option>
+                  );
+                })}
               </optgroup>
             </select>
           </div>
@@ -232,7 +320,7 @@ export default function AnswerWritingStudio({
         {/* Question Statement */}
         <div style={{ marginBottom: '16px' }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: '1.45' }}>
-            {language === "hi" && activeQuestion.question_hi ? activeQuestion.question_hi : activeQuestion.question_en}
+            {getQuestionText(activeQuestion)}
           </h2>
           {activeQuestion.directive_tip && (
             <div style={{ marginTop: '8px', fontSize: '0.82rem', color: 'var(--gold-400)', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -269,7 +357,7 @@ export default function AnswerWritingStudio({
               className={`btn btn-sm ${isTimerRunning ? 'btn-secondary' : 'btn-primary'}`}
             >
               {isTimerRunning ? <Pause size={14} /> : <Play size={14} />}
-              <span>{isTimerRunning ? "Pause" : "Start Clock"}</span>
+              <span>{isTimerRunning ? t("simulator.pause") : t("answerStudio.startClock")}</span>
             </button>
 
             <button 
@@ -288,7 +376,7 @@ export default function AnswerWritingStudio({
               className="btn btn-sm btn-secondary"
             >
               <Camera size={15} color="var(--indigo-400)" />
-              <span>{language === "hi" ? "हस्तलिखित OCR स्कैन" : "Scan Handwritten Sheet"}</span>
+              <span>{t("answerStudio.scanHandwritten")}</span>
             </button>
 
             <button 
@@ -297,7 +385,7 @@ export default function AnswerWritingStudio({
               style={{ fontSize: '0.8rem' }}
             >
               <FileText size={14} color="var(--gold-400)" />
-              <span>{language === "hi" ? "नमूना उत्तर लोड करें" : "Load Sample Draft"}</span>
+              <span>{t("answerStudio.loadSampleDraft")}</span>
             </button>
           </div>
 
@@ -314,13 +402,13 @@ export default function AnswerWritingStudio({
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <PenTool size={18} color="var(--gold-400)" />
               <h3 style={{ fontSize: '1.05rem', fontWeight: 700 }}>
-                {language === "hi" ? "उत्तर लेखन क्षेत्र" : "Answer Workspace"}
+                {t("answerStudio.answerWorkspace")}
               </h3>
             </div>
 
             {/* Word Count Indicator */}
             <div style={{ fontSize: '0.85rem', color: wordCount > targetWords * 1.15 ? 'var(--rose-400)' : 'var(--text-secondary)' }}>
-              <strong>{wordCount}</strong> / {targetWords} Words
+              <strong>{wordCount}</strong> / {targetWords} {t("common.words")}
               {wordCount > targetWords * 1.15 && <span style={{ marginLeft: '6px', fontSize: '0.75rem' }}>(Over limit)</span>}
             </div>
           </div>
@@ -330,9 +418,7 @@ export default function AnswerWritingStudio({
             className="form-input"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder={language === "hi" 
-              ? "यहां अपना उत्तर लिखें... (भूमिका, मुख्य भाग, सर्वोच्च न्यायालय के निर्णय/समितियां/विचारक और निष्कर्ष)..." 
-              : "Type your UPSC answer here... (Introduction, Body with sub-headings & diagrams/cases, Substantiation, and Conclusion)..."}
+            placeholder={t("answerStudio.typeAnswerHere")}
             rows={16}
             style={{ 
               fontFamily: 'inherit', 
@@ -357,7 +443,7 @@ export default function AnswerWritingStudio({
               style={{ padding: '10px 24px', fontWeight: 700 }}
             >
               <Sparkles size={16} />
-              <span>{isEvaluating ? "Evaluating 360°..." : "Evaluate Answer (360° Board Suite)"}</span>
+              <span>{isEvaluating ? "..." : t("answerStudio.evaluateAnswer")}</span>
             </button>
           </div>
 
@@ -371,7 +457,7 @@ export default function AnswerWritingStudio({
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                  <span className="badge badge-gold">UPSC Board Evaluation</span>
+                  <span className="badge badge-gold">{t("answerStudio.boardEvaluation")}</span>
                   <span className={`badge badge-${evaluationResult.risk_analysis.badge_color}`}>
                     {evaluationResult.risk_analysis.risk_level}
                   </span>
@@ -421,7 +507,7 @@ export default function AnswerWritingStudio({
                 style={{ fontSize: '0.75rem', padding: '4px 10px', whiteSpace: 'nowrap' }}
               >
                 <AlertTriangle size={13} />
-                <span>1. Failure Risk Audit</span>
+                <span>{t("answerStudio.evalTabs.riskAudit")}</span>
               </button>
               <button
                 onClick={() => setActiveEvalTab("where_missed")}
@@ -429,7 +515,7 @@ export default function AnswerWritingStudio({
                 style={{ fontSize: '0.75rem', padding: '4px 10px', whiteSpace: 'nowrap' }}
               >
                 <Target size={13} />
-                <span>2. Where Missed & Why</span>
+                <span>{t("answerStudio.evalTabs.whereMissed")}</span>
               </button>
               <button
                 onClick={() => setActiveEvalTab("how_to_fix")}
@@ -437,7 +523,7 @@ export default function AnswerWritingStudio({
                 style={{ fontSize: '0.75rem', padding: '4px 10px', whiteSpace: 'nowrap' }}
               >
                 <Zap size={13} />
-                <span>3. How to Fix (Topper Plan)</span>
+                <span>{t("answerStudio.evalTabs.howToFix")}</span>
               </button>
               <button
                 onClick={() => setActiveEvalTab("pillars_radar")}
@@ -445,7 +531,7 @@ export default function AnswerWritingStudio({
                 style={{ fontSize: '0.75rem', padding: '4px 10px', whiteSpace: 'nowrap' }}
               >
                 <BarChart3 size={13} />
-                <span>4. 360° Multi-Pillar Scorecard</span>
+                <span>{t("answerStudio.evalTabs.pillarsRadar")}</span>
               </button>
               <button
                 onClick={() => setActiveEvalTab("sme_feedback")}
@@ -453,7 +539,7 @@ export default function AnswerWritingStudio({
                 style={{ fontSize: '0.75rem', padding: '4px 10px', whiteSpace: 'nowrap' }}
               >
                 <UserCheck size={13} />
-                <span>5. SME Persona Audit</span>
+                <span>{t("answerStudio.evalTabs.smeFeedback")}</span>
               </button>
             </div>
 

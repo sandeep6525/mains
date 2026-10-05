@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model AdminUser {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model IngestionDocument {
+  id               String   @id @default(uuid())
+  originalFileName String
+  storedFileName   String
+  filePath         String
+  sha256           String   @unique
+  source           String   @default("UPSC")
+  sourceUrl        String?
+  status           String   @default("UPLOADED") // UPLOADED, PROCESSING, COMPLETED, FAILED
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  jobs             IngestionJob[]
+}
+
+model IngestionJob {
+  id           String            @id @default(uuid())
+  documentId   String
+  document     IngestionDocument @relation(fields: [documentId], references: [id])
+  status       String            @default("PENDING") // PENDING, RUNNING, SUCCESS, FAILED
+  startedAt    DateTime?
+  completedAt  DateTime?
+  errorMessage String?
+  resultJson   String?           // To temporarily store the extraction result
+}
+
+model PyqQuestion {
+  id              String   @id @default(uuid())
+  paper_id        String
+  paper_code      String
+  topic_id        String?
+  topic_title     String?
+  year            Int
+  marks           Int?
+  word_limit      Int?
+  time_limit_mins Int?
+  directive       String?
+  directive_tip   String?
+  question_en     String?
+  question_hi     String?
+  model_framework String?  // Store as JSON string
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  question_number Int
+  isPublished     Boolean  @default(true)
+  
+  // Logical identity of a question within a paper
+  @@unique([year, paper_code, question_number])
+}
+
+model FetchIqSource {
+  id                    String   @id @default(uuid())
+  name                  String
+  url                   String
+  sourceType            String   @default("UPSC_PREVIOUS_PAPERS")
+  isEnabled             Boolean  @default(true)
+  checkFrequencyHours   Int      @default(24)
+  allowedDomain         String
+  description           String?
+  lastCheckedAt         DateTime?
+  lastSuccessfulCheckAt DateTime?
+  lastError             String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model SystemLock {
+  id          String   @id
+  lockedAt    DateTime
+  lockedBy    String
+  expiresAt   DateTime
+}

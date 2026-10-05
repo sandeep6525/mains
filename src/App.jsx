@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from './context/LanguageContext';
 import Header from './components/Header';
 import AnswerWritingStudio from './components/AnswerWritingStudio';
 import PYQVaultArchive from './components/PYQVaultArchive';
@@ -10,10 +11,47 @@ import MasteryAnalytics from './components/MasteryAnalytics';
 import { ShieldCheck, Award, Sparkles, BookOpen, Layers } from 'lucide-react';
 import './App.css';
 
+// FetchIQ Imports
+import FetchIQLogin from './components/FetchIQ/Login';
+import FetchIQDashboard from './components/FetchIQ/Dashboard';
+import FetchIQIngestion from './components/FetchIQ/Ingestion';
+import FetchIQReview from './components/FetchIQ/Review';
+import FetchIQReviewQueue from './components/FetchIQ/ReviewQueue';
+import FetchIQSources from './components/FetchIQ/Sources';
+
 export default function App() {
+  const { language, setLanguage, t } = useLanguage();
+
+  // Simple Path-based router for FetchIQ administrative pages
+  const path = window.location.pathname.replace(/\/$/, '');
+  
+  const isAuthenticated = !!localStorage.getItem('fetchIqToken');
+
+  if (path === '/admin/login' || path === '/fetchiq/login') return <FetchIQLogin />;
+  
+  if (path === '/admin' || path === '/fetchiq/dashboard') {
+     if (!isAuthenticated) { window.location.href = '/admin/login'; return null; }
+     return <FetchIQDashboard />;
+  }
+  if (path === '/fetchiq/review-queue') {
+     if (!isAuthenticated) { window.location.href = '/admin/login'; return null; }
+     return <FetchIQReviewQueue />;
+  }
+  if (path === '/admin/sources') {
+     if (!isAuthenticated) { window.location.href = '/admin/login'; return null; }
+     return <FetchIQSources />;
+  }
+  if (path === '/fetchiq/ingestion') {
+     if (!isAuthenticated) { window.location.href = '/admin/login'; return null; }
+     return <FetchIQIngestion />;
+  }
+  if (path.startsWith('/fetchiq/review/')) {
+     if (!isAuthenticated) { window.location.href = '/admin/login'; return null; }
+     return <FetchIQReview />;
+  }
+
   const [activeTab, setActiveTab] = useState("studio");
   const [selectedQuestionId, setSelectedQuestionId] = useState("pyq-2024-gs2-01");
-  const [language, setLanguage] = useState("en"); // en or hi
   const [theme, setTheme] = useState("dark"); // dark or light
 
   useEffect(() => {
@@ -42,8 +80,6 @@ export default function App() {
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        language={language}
-        setLanguage={setLanguage}
         theme={theme}
         setTheme={setTheme}
       />

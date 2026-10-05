@@ -14,22 +14,24 @@ import {
   Archive
 } from 'lucide-react';
 
+import { useLanguage } from '../context/LanguageContext';
+
 export default function Header({ 
   activeTab, 
   setActiveTab, 
-  language, 
-  setLanguage, 
   theme, 
   setTheme 
 }) {
+  const { language, setLanguage, t } = useLanguage();
+
   const navItems = [
-    { id: "studio", label: language === "hi" ? "उत्तर लेखन स्टूडियो" : "Answer Studio", icon: PenTool },
-    { id: "archive", label: language === "hi" ? "10 वर्ष PYQ एवं मॉक" : "10Y PYQs & Mocks", icon: Archive },
-    { id: "syllabus", label: language === "hi" ? "पाठ्यक्रम एवं विषय" : "Syllabus Matrix", icon: Layers },
-    { id: "simulator", label: language === "hi" ? "3 घंटे का पेपर सिमुलेटर" : "3-Hour Simulator", icon: Clock },
-    { id: "current-affairs", label: language === "hi" ? "समसामयिकी मैट्रिक्स" : "Current Affairs", icon: BookOpen },
-    { id: "optionals", label: language === "hi" ? "वैकल्पिक विषय (15)" : "Optionals (15)", icon: Award },
-    { id: "analytics", label: language === "hi" ? "360° एनालिटिक्स" : "Mastery Analytics", icon: TrendingUp }
+    { id: "studio", label: t("nav.answerStudio"), icon: PenTool },
+    { id: "archive", label: t("nav.pyqsAndMocks"), icon: Archive },
+    { id: "syllabus", label: t("nav.syllabusMatrix"), icon: Layers },
+    { id: "simulator", label: t("nav.simulator"), icon: Clock },
+    { id: "current-affairs", label: t("nav.currentAffairs"), icon: BookOpen },
+    { id: "optionals", label: t("nav.optionals"), icon: Award },
+    { id: "analytics", label: t("nav.masteryAnalytics"), icon: TrendingUp }
   ];
 
   return (

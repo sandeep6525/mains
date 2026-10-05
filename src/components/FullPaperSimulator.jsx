@@ -26,10 +26,105 @@ import confetti from 'canvas-confetti';
 import { SIMULATED_PAPERS } from '../data/fullPaperData';
 import { evaluateAnswerSubmission } from '../data/evaluationEngine';
 import OCRScannerModal from './OCRScannerModal';
+import { getPaperConfig } from '../config/simulatorConfig';
+import { getQuestions } from '../services/api/questions';
 
 export default function FullPaperSimulator({ language }) {
   const [selectedPaperId, setSelectedPaperId] = useState("sim-gs2");
-  const activePaper = SIMULATED_PAPERS.find(p => p.id === selectedPaperId) || SIMULATED_PAPERS[0];
+
+  const [sourceMode, setSourceMode] = useState("PYQ");
+  const [selectedPaperBase, setSelectedPaperBase] = useState("GS-I");
+  const [selectedPaperPart, setSelectedPaperPart] = useState("P1");
+  const [aiDifficulty, setAiDifficulty] = useState("Medium");
+  const [aiCount, setAiCount] = useState(20);
+  const [aiMarks, setAiMarks] = useState(250);
+  const [aiIncludeCurrentAffairs, setAiIncludeCurrentAffairs] = useState(true);
+  const [aiUseHistoricalPattern, setAiUseHistoricalPattern] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState(null);
+  const [simulatorState, setSimulatorState] = useState("CONFIG"); // CONFIG | RUNNING
+  const [generatedPaper, setGeneratedPaper] = useState(null);
+
+  const getSelectedCanonicalCode = () => {
+    if (selectedPaperBase.startsWith('OPT-')) {
+      return `${selectedPaperBase}-${selectedPaperPart}`;
+    }
+    return selectedPaperBase;
+  };
+
+  const [availabilityData, setAvailabilityData] = useState({});
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchAvail = async () => {
+      try {
+        const res = await fetch(`http://localhost:3000/api/fetchiq/simulator/pyq/availability`);
+        if (!res.ok) throw new Error('Failed to fetch availability');
+        const data = await res.json();
+        
+        if (!isMounted) return;
+        
+        const availability = {};
+        data.forEach(item => {
+          availability[item.paper_code] = item.count;
+        });
+        setAvailabilityData(availability);
+      } catch (err) {
+        console.error('[SIMULATOR] Error fetching questions for availability:', err);
+      }
+    };
+    fetchAvail();
+    return () => { isMounted = false; };
+  }, []);
+
+  const canonicalCode = getSelectedCanonicalCode();
+
+  // Derived arrays for dropdowns
+  const ALL_GS = [
+    { val: "GS-I", label: "GS-I" },
+    { val: "GS-II", label: "GS-II" },
+    { val: "GS-III", label: "GS-III" },
+    { val: "GS-IV", label: "GS-IV" },
+    { val: "ESSAY", label: "Essay" }
+  ];
+  const ALL_OPT = [
+    { val: "OPT-ECON", label: "Economics" },
+    { val: "OPT-PSIR", label: "PSIR" },
+    { val: "OPT-SOCIO", label: "Sociology" },
+    { val: "OPT-PUBAD", label: "Public Administration" },
+    { val: "OPT-GEO", label: "Geography" },
+    { val: "OPT-HIST", label: "History" },
+    { val: "OPT-ANTHRO", label: "Anthropology" },
+    { val: "OPT-PHIL", label: "Philosophy" },
+    { val: "OPT-LAW", label: "Law" },
+    { val: "OPT-COMM", label: "Commerce & Accountancy" },
+    { val: "OPT-PSYCH", label: "Psychology" },
+    { val: "OPT-AGRI", label: "Agriculture" },
+    { val: "OPT-MATH", label: "Mathematics" },
+    { val: "OPT-MGMT", label: "Management" },
+    { val: "OPT-HINDI-LIT", label: "Hindi Literature" }
+  ];
+
+  const availableGs = sourceMode === 'PYQ' ? ALL_GS.filter(p => availabilityData[p.val]) : ALL_GS;
+  const availableOpt = sourceMode === 'PYQ' ? ALL_OPT.filter(p => availabilityData[p.val + '-P1'] || availabilityData[p.val + '-P2']) : ALL_OPT;
+
+  useEffect(() => {
+    if (sourceMode === 'PYQ' && Object.keys(availabilityData).length > 0) {
+        const isValid = availableGs.some(p => p.val === selectedPaperBase) || availableOpt.some(p => p.val === selectedPaperBase);
+        if (!isValid) {
+            if (availableGs.length > 0) setSelectedPaperBase(availableGs[0].val);
+            else if (availableOpt.length > 0) setSelectedPaperBase(availableOpt[0].val);
+        }
+    }
+  }, [sourceMode, availabilityData, selectedPaperBase, availableGs, availableOpt]);
+
+  const currentAvailableQuestionsCount = (sourceMode === 'PYQ' && availabilityData[canonicalCode]) 
+        ? availabilityData[canonicalCode] : 0;
+  
+  const requiredQuestionsCount = getPaperConfig(canonicalCode).questionCount || 20;
+
+  const fallbackPaper = SIMULATED_PAPERS.find(p => p.id === selectedPaperId) || SIMULATED_PAPERS[0];
+  const activePaper = generatedPaper || fallbackPaper;
 
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -44,17 +139,103 @@ export default function FullPaperSimulator({ language }) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [paperEvaluationReport, setPaperEvaluationReport] = useState(null);
 
-  const handlePaperChange = (newPaperId) => {
-    const newPaper = SIMULATED_PAPERS.find(p => p.id === newPaperId) || SIMULATED_PAPERS[0];
-    setSelectedPaperId(newPaperId);
-    setCurrentQIndex(0);
-    setAnswers({});
-    setFlagged({});
-    setSecondsRemaining((newPaper.duration_minutes || 180) * 60);
-    setIsTimerRunning(false);
-    setIsSubmitted(false);
-    setPaperEvaluationReport(null);
+
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    setGenerateError(null);
+    try {
+      const code = getSelectedCanonicalCode();
+      const config = getPaperConfig(code);
+
+      if (sourceMode === 'PYQ') {
+          // Calls Backend
+          const endpoint = '/api/fetchiq/simulator/pyq/generate';
+          const payload = {
+            paperCode: code
+          };
+
+          const res = await fetch(`http://localhost:3000${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          let responseData = null;
+          try {
+            responseData = await res.json();
+          } catch (err) {
+            console.error('[SIMULATOR] API response parse error:', err);
+            throw new Error('Unable to generate the paper. Please check the server and try again.');
+          }
+
+          if (!res.ok) {
+            console.error('[SIMULATOR] API error:', responseData?.error);
+            throw new Error('Unable to generate the paper. Please check the server and try again.');
+          }
+
+          setGeneratedPaper(responseData);
+          setCurrentQIndex(0);
+          setAnswers({});
+          setFlagged({});
+          setSecondsRemaining((responseData.duration_minutes || 180) * 60);
+          setIsTimerRunning(false);
+          setIsSubmitted(false);
+          setPaperEvaluationReport(null);
+          setSimulatorState("RUNNING");
+      } else {
+          // AI Generation Mode (Calls Backend)
+          const endpoint = '/api/fetchiq/simulator/ai/generate';
+          const payload = {
+            paperCode: code,
+            difficulty: aiDifficulty,
+            count: aiCount,
+            marks: aiMarks,
+            includeCurrentAffairs: aiIncludeCurrentAffairs,
+            useHistoricalPattern: aiUseHistoricalPattern
+          };
+
+          const res = await fetch(`http://localhost:3000${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          let responseData = null;
+          try {
+            responseData = await res.json();
+          } catch (err) {
+            console.error('[SIMULATOR] API response parse error:', err);
+            throw new Error('Unable to generate the paper. Please check the server and try again.');
+          }
+
+          if (!res.ok) {
+            console.error('[SIMULATOR] API error:', responseData?.error);
+            throw new Error('Unable to generate the paper. Please check the server and try again.');
+          }
+
+          setGeneratedPaper(responseData);
+          
+          setCurrentQIndex(0);
+          setAnswers({});
+          setFlagged({});
+          setSecondsRemaining((responseData.duration_minutes || 180) * 60);
+          setIsTimerRunning(false);
+          setIsSubmitted(false);
+          setPaperEvaluationReport(null);
+          setSimulatorState("RUNNING");
+      }
+    } catch (e) {
+      console.error('[SIMULATOR] Generation failed:', e);
+      setGenerateError(e.message || 'Unable to generate the paper. Please check the server and try again.');
+    } finally {
+      setIsGenerating(false);
+    }
   };
+
+  const handleResetToConfig = () => {
+      setSimulatorState("CONFIG");
+  };
+
 
   // Master Clock tick
   useEffect(() => {
@@ -169,80 +350,173 @@ export default function FullPaperSimulator({ language }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
-      {/* Simulation Header Banner */}
-      <div className="glass-card" style={{ padding: '20px 24px', borderLeft: '4px solid var(--indigo-500)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
-              <span className="badge badge-indigo">Official Simulation Mode</span>
-              <span className="badge badge-gold">{activePaper.code} (250 Marks)</span>
-              <span className="badge badge-emerald">{activePaper.questions.length} Questions ({activePaper.duration_minutes / 60} Hours)</span>
-              <span className="badge badge-sky">Board Evaluation Active</span>
+      {simulatorState === "CONFIG" ? (
+        <div className="glass-card" style={{ padding: '24px' }}>
+          <h2 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '20px' }}>Configure Paper Simulator</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            
+            {/* Question Source Row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600, width: '120px' }}>Question Source:</span>
+                <button className={`btn btn-sm ${sourceMode === 'PYQ' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setSourceMode('PYQ')} style={{ borderRadius: 'var(--radius-full)', padding: '4px 12px', fontSize: '0.75rem' }}>PYQ</button>
+                <button className={`btn btn-sm ${sourceMode === 'AI' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setSourceMode('AI')} style={{ borderRadius: 'var(--radius-full)', padding: '4px 12px', fontSize: '0.75rem' }}>AI Generated</button>
+              </div>
+
+              {/* Select Paper Row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600, width: '120px' }}>Select Paper:</span>
+                <select className="form-input" value={selectedPaperBase} onChange={(e) => setSelectedPaperBase(e.target.value)} style={{ padding: '4px 8px', width: 'auto', minWidth: '150px' }}>
+                  {availableGs.length > 0 && (
+                    <optgroup label="General Studies">
+                        {availableGs.map(p => <option key={p.val} value={p.val}>{p.label}</option>)}
+                    </optgroup>
+                  )}
+                  {availableOpt.length > 0 && (
+                    <optgroup label="Optional">
+                        {availableOpt.map(p => <option key={p.val} value={p.val}>{p.label}</option>)}
+                    </optgroup>
+                  )}
+                  {availableGs.length === 0 && availableOpt.length === 0 && (
+                      <option value="">No published papers available</option>
+                  )}
+                </select>
+                
+                {selectedPaperBase && selectedPaperBase.startsWith('OPT-') && (
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {sourceMode !== 'PYQ' || availabilityData[selectedPaperBase + '-P1'] ? (
+                        <button className={`btn btn-sm ${selectedPaperPart === 'P1' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setSelectedPaperPart('P1')} style={{ borderRadius: 'var(--radius-full)', padding: '4px 12px', fontSize: '0.75rem' }}>Paper 1</button>
+                    ) : null}
+                    {sourceMode !== 'PYQ' || availabilityData[selectedPaperBase + '-P2'] ? (
+                        <button className={`btn btn-sm ${selectedPaperPart === 'P2' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setSelectedPaperPart('P2')} style={{ borderRadius: 'var(--radius-full)', padding: '4px 12px', fontSize: '0.75rem' }}>Paper 2</button>
+                    ) : null}
+                  </div>
+                )}
+              </div>
+
+              {/* Mode Specific Config Row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600, width: '120px' }}>Configuration:</span>
+                
+                {sourceMode === 'PYQ' ? null : (
+                  <>
+                    <select className="form-input" value={aiDifficulty} onChange={(e) => setAiDifficulty(e.target.value)} style={{ padding: '4px 8px', width: 'auto' }}>
+                      <option value="Easy">Easy</option>
+                      <option value="Medium">Medium</option>
+                      <option value="Hard">Hard</option>
+                    </select>
+                    <select className="form-input" value={aiCount} onChange={(e) => setAiCount(e.target.value)} style={{ padding: '4px 8px', width: 'auto' }}>
+                      <option value="10">10 Questions</option>
+                      <option value="20">20 Questions</option>
+                    </select>
+                    <button className={`btn btn-sm ${aiIncludeCurrentAffairs ? 'btn-primary' : 'btn-outline'}`} onClick={() => setAiIncludeCurrentAffairs(!aiIncludeCurrentAffairs)} style={{ borderRadius: 'var(--radius-full)', padding: '4px 12px', fontSize: '0.75rem' }}>CA: {aiIncludeCurrentAffairs ? 'ON' : 'OFF'}</button>
+                  </>
+                )}
+              </div>
+              
+              {generateError && (
+                <div style={{ fontSize: '0.8rem', color: 'var(--rose-400)', background: 'rgba(244, 63, 94, 0.1)', padding: '8px 12px', borderRadius: '4px' }}>
+                  {generateError}
+                </div>
+              )}
+
+              <div style={{ marginTop: '8px' }}>
+                {sourceMode === 'PYQ' && (
+                  <div style={{ marginBottom: '12px', fontSize: '0.85rem' }}>
+                    <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Availability: </span>
+                    <span style={{ color: currentAvailableQuestionsCount > 0 ? 'var(--emerald-500)' : 'var(--rose-500)', fontWeight: 600 }}>
+                      {currentAvailableQuestionsCount} PYQ Questions
+                    </span>
+                    <div style={{ color: currentAvailableQuestionsCount > 0 ? 'var(--text-muted)' : 'var(--rose-400)', marginTop: '4px' }}>
+                      {currentAvailableQuestionsCount === 0 
+                          ? "No published PYQ questions are currently available for this paper." 
+                          : (currentAvailableQuestionsCount >= requiredQuestionsCount 
+                              ? `${requiredQuestionsCount} questions will be selected for this simulation.`
+                              : `${currentAvailableQuestionsCount} questions will be used for this simulation.`
+                            )
+                      }
+                    </div>
+                  </div>
+                )}
+                <button 
+                  className="btn btn-success" 
+                  onClick={handleGenerate} 
+                  disabled={isGenerating || (sourceMode === 'PYQ' && currentAvailableQuestionsCount === 0)}
+                >
+                  {isGenerating ? 'Generating...' : 'Start Simulator'}
+                </button>
+              </div>
             </div>
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 800 }}>
-              {language === "hi" && activePaper.title_hi ? activePaper.title_hi : activePaper.title}
-            </h2>
-            <p style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
-              {activePaper.instructions}
-            </p>
+        </div>
+      ) : (
+        <>
+          {/* Simulation Header Banner */}
+          <div className="glass-card" style={{ padding: '20px 24px', borderLeft: '4px solid var(--indigo-500)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                  <span className="badge badge-indigo">Official Simulation Mode</span>
+                  <span className="badge badge-gold">{activePaper.code} (250 Marks)</span>
+                  <span className="badge badge-emerald">{activePaper.questions?.length || 20} Questions ({(activePaper.duration_minutes || 180) / 60} Hours)</span>
+                  <span className="badge badge-sky">Board Evaluation Active</span>
+                </div>
+                <h2 style={{ fontSize: '1.35rem', fontWeight: 800 }}>
+                  {language === "hi" && activePaper.title_hi ? activePaper.title_hi : activePaper.title}
+                </h2>
+                <p style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+                  {activePaper.instructions}
+                </p>
+              </div>
+
+              {/* Master 3-Hour Timer & Start Controls */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <div style={{ 
+                  padding: '10px 20px', 
+                  borderRadius: 'var(--radius-lg)', 
+                  background: secondsRemaining < 900 ? 'var(--rose-bg)' : 'var(--bg-tertiary)',
+                  border: `1px solid ${secondsRemaining < 900 ? 'rgba(244, 63, 94, 0.4)' : 'var(--border-medium)'}`,
+                  fontFamily: 'var(--font-mono)',
+                  fontWeight: 800,
+                  fontSize: '1.4rem',
+                  color: secondsRemaining < 900 ? 'var(--rose-400)' : 'var(--gold-400)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <Clock size={20} />
+                  <span>{formatTimer(secondsRemaining)}</span>
+                </div>
+
+                <button 
+                  onClick={() => setIsTimerRunning(!isTimerRunning)} 
+                  className={`btn ${isTimerRunning ? 'btn-secondary' : 'btn-primary'}`}
+                >
+                  {isTimerRunning ? <Pause size={16} /> : <Play size={16} />}
+                  <span>{isTimerRunning ? "Pause" : "Start Paper Clock"}</span>
+                </button>
+
+                <button
+                  onClick={() => { setIsTimerRunning(false); setSecondsRemaining((activePaper.duration_minutes || 180) * 60); }}
+                  className="btn btn-outline btn-sm"
+                  title="Reset 3-Hour Clock"
+                >
+                  <RotateCcw size={15} />
+                </button>
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-subtle)', paddingTop: '14px', marginTop: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Source:</span>
+                <span className="badge badge-indigo">{sourceMode}</span>
+              </div>
+              <button className="btn btn-sm btn-outline" onClick={handleResetToConfig} style={{ borderRadius: 'var(--radius-full)', padding: '4px 12px', fontSize: '0.75rem' }}>
+                <RotateCcw size={12} style={{ marginRight: '4px' }} />
+                New Configuration
+              </button>
+            </div>
           </div>
 
-          {/* Master 3-Hour Timer & Start Controls */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <div style={{ 
-              padding: '10px 20px', 
-              borderRadius: 'var(--radius-lg)', 
-              background: secondsRemaining < 900 ? 'var(--rose-bg)' : 'var(--bg-tertiary)',
-              border: `1px solid ${secondsRemaining < 900 ? 'rgba(244, 63, 94, 0.4)' : 'var(--border-medium)'}`,
-              fontFamily: 'var(--font-mono)',
-              fontWeight: 800,
-              fontSize: '1.4rem',
-              color: secondsRemaining < 900 ? 'var(--rose-400)' : 'var(--gold-400)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <Clock size={20} />
-              <span>{formatTimer(secondsRemaining)}</span>
-            </div>
-
-            <button 
-              onClick={() => setIsTimerRunning(!isTimerRunning)} 
-              className={`btn ${isTimerRunning ? 'btn-secondary' : 'btn-primary'}`}
-            >
-              {isTimerRunning ? <Pause size={16} /> : <Play size={16} />}
-              <span>{isTimerRunning ? "Pause" : "Start Paper Clock"}</span>
-            </button>
-
-            <button
-              onClick={() => { setIsTimerRunning(false); setSecondsRemaining(activePaper.duration_minutes * 60); }}
-              className="btn btn-outline btn-sm"
-              title="Reset 3-Hour Clock"
-            >
-              <RotateCcw size={15} />
-            </button>
-          </div>
-        </div>
-
-        {/* Paper Selector Tabs */}
-        <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid var(--border-subtle)', paddingTop: '14px', marginTop: '14px', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', alignSelf: 'center', fontWeight: 600, whiteSpace: 'nowrap' }}>
-            Select Paper to Simulate:
-          </span>
-          {SIMULATED_PAPERS.map(paper => (
-            <button
-              key={paper.id}
-              onClick={() => handlePaperChange(paper.id)}
-              className={`btn btn-sm ${selectedPaperId === paper.id ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ borderRadius: 'var(--radius-full)', padding: '6px 14px', fontSize: '0.78rem', whiteSpace: 'nowrap' }}
-            >
-              <span>{paper.code} ({paper.total_marks}M)</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {!isSubmitted ? (
+      {simulatorState === 'RUNNING' && !isSubmitted ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
           
           {/* Left Column: 20-Question Navigator Palette */}
@@ -610,6 +884,8 @@ export default function FullPaperSimulator({ language }) {
           </div>
 
         </div>
+      )}
+      </>
       )}
 
       {/* OCR Scanner Modal */}

@@ -1,0 +1,55 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "number": "2",
+      "text": "Read the passage given below and answer the questions that follow. 5 x 4 = 20\nA society grows stronger when knowledge is shared rather than restricted. Education gives individuals the\nability to understand change, question assumptions and participate responsibly in public life. Technology has\nmade information easier to access, but access alone does not guarantee wisdom. People must learn to\nexamine evidence, distinguish fact from opinion and use information responsibly. The real value of education\ntherefore lies not only in what a person knows, but also in how that knowledge is used. A well-informed\ncitizen can contribute to a community by solving problems, respecting differences and making thoughtful\ndecisions.",
+      "subquestions": [
+        {
+          "label": "a",
+          "text": "According to the author, why is knowledge sharing important?",
+          "pages": [
+            1
+          ]
+        },
+        {
+          "label": "b",
+          "text": "What does education enable individuals to do?",
+          "pages": [
+            1
+          ]
+        },
+        {
+          "label": "c",
+          "text": "Why does access to information not always produce wisdom?",
+          "pages": [
+            1
+          ]
+        },
+        {
+          "label": "d",
+          "text": "What responsibilities should people have while using information?",
+          "pages": [
+            1
+          ]
+        },
+        {
+          "label": "e",
+          "text": "What is the real value of education according to the passage?",
+          "pages": [
+            1
+          ]
+        }
+      ],
+      "pages": [
+        1
+      ]
+    }
+  ],
+  "preamble": [],
+  "warnings": [
+    "Heuristic parsing: verify numbering, choices, nested parts, formulas and reading order against the source."
+  ],
+  "source": "image(2).png",
+  "ocr_languages": "eng"
+}

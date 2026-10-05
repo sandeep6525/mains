@@ -1,0 +1,5 @@
+Question 1: What is Python?
+Answer: Python is a programming language.
+
+Question 2: What is SQL?
+Answer: SQL is used to work with databases.

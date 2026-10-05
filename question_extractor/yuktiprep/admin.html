@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>YuktiPrep · Question import</title>
+<style>body{font:16px system-ui;max-width:900px;margin:32px auto;padding:16px}input,textarea,button{padding:10px;margin:5px}textarea{width:95%;height:360px}label{display:block}#status{white-space:pre-wrap}</style>
+<h1>YuktiPrep question import</h1><p>Upload a paper, then review its passage and sub-questions before approval.</p>
+<label>API base URL <input id="base" value="http://127.0.0.1:8000"></label>
+<label>Admin token <input id="token" type="password" autocomplete="off"></label>
+<label>Exam ID <input id="exam"></label><label>Syllabus topic ID <input id="topic"></label>
+<label>Source URL/reference <input id="source"></label><label>OCR languages <input id="langs" value="eng+tel"></label>
+<label>Paper <input id="file" type="file" accept=".pdf,.png,.jpg,.jpeg"></label>
+<button id="upload">Upload</button><label>Job ID <input id="job"></label><button id="refresh">Check status</button>
+<pre id="status" role="status"></pre><p>Edit the extracted questions below. Keep the parent passage and labels intact.</p>
+<textarea id="review" aria-label="Editable question JSON"></textarea><button id="approve" disabled>Approve reviewed questions</button>
+<script>
+const el=id=>document.getElementById(id);
+async function call(path,opts={}){const r=await fetch(el('base').value.replace(/\/$/,'')+path,{...opts,headers:{...opts.headers,Authorization:'Bearer '+el('token').value}});const data=await r.json();if(!r.ok)throw Error(JSON.stringify(data));return data}
+async function run(action){try{await action()}catch(e){el('status').textContent=e.message}}
+el('upload').onclick=()=>run(async()=>{const f=el('file').files[0];if(!f)throw Error('Select a file');const d=new FormData();d.append('file',f);for(const [key,id] of [['exam_id','exam'],['syllabus_topic_id','topic'],['source_reference','source'],['languages','langs']])d.append(key,el(id).value);const r=await call('/api/v1/question-imports',{method:'POST',body:d});el('job').value=r.job_id;el('status').textContent=r.status;el('approve').disabled=true;el('review').value=''});
+el('refresh').onclick=()=>run(async()=>{const r=await call('/api/v1/question-imports/'+encodeURIComponent(el('job').value));el('status').textContent=JSON.stringify({status:r.status,error:r.error,warnings:r.result?.warnings},null,2);el('approve').disabled=r.status!=='review';if(r.status==='review')el('review').value=JSON.stringify({questions:r.result.questions},null,2)});
+el('approve').onclick=()=>run(async()=>{const r=await call('/api/v1/question-imports/'+encodeURIComponent(el('job').value)+'/approve',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(JSON.parse(el('review').value))});el('status').textContent=r.status;el('approve').disabled=true});
+</script></html>

@@ -1,0 +1,663 @@
+{
+  "document": {
+    "fileName": "1790744481099-675066946.pdf",
+    "source": "UPSC",
+    "sha256": "10a8c3f774437272cc6c9637b14e09081ed9a2e676fdf8c53814e9fe3b29fa1f",
+    "instructions": ""
+  },
+  "identification": {
+    "exam": {
+      "field": "exam",
+      "value": "UPSC CSE Mains",
+      "confidence": 0.5,
+      "evidence": null,
+      "method": "default"
+    },
+    "year": {
+      "field": "year",
+      "value": null,
+      "confidence": 0.5,
+      "evidence": null,
+      "method": "default"
+    },
+    "paper": {
+      "field": "paper",
+      "value": "UNKNOWN",
+      "confidence": 0.5,
+      "evidence": null,
+      "method": "default"
+    },
+    "paperType": {
+      "field": "paperType",
+      "value": "UNKNOWN",
+      "confidence": 0.9,
+      "evidence": "General Studies nature",
+      "method": "inferred"
+    },
+    "subject": {
+      "field": "subject",
+      "value": "General Studies",
+      "confidence": 0.5,
+      "evidence": null,
+      "method": "default"
+    },
+    "languages": {
+      "field": "languages",
+      "value": "English + Hindi",
+      "confidence": 0.95,
+      "evidence": "both in HINDI and in ENGLISH",
+      "method": "document_text"
+    },
+    "marks": {
+      "field": "marks",
+      "value": 250,
+      "confidence": 0.5,
+      "evidence": null,
+      "method": "default"
+    },
+    "durationMinutes": {
+      "field": "durationMinutes",
+      "value": 180,
+      "confidence": 0.5,
+      "evidence": null,
+      "method": "default"
+    },
+    "questionCount": {
+      "field": "questionCount",
+      "value": 20,
+      "confidence": 0.5,
+      "evidence": null,
+      "method": "default"
+    }
+  },
+  "questions": [
+    {
+      "_originalIndex": "0+6",
+      "questionNumber": 1,
+      "questionEn": "Which one of the following Carnatic music ragas is similar to Raga Bilawal in Hindustani music ? Emergence of urban life",
+      "questionHi": "निम्नलिखित में से कर्नाटिक संगीत के किस राग का हिन्ुस्तानी संगीत के राग बिलावल से मेल है? शहरी जीवन के उद्व से मुद्रा अ्थव्यवस्था कीओर संक्रमण से नीचे दिए गए कूट का प्रयोग कर उत्तर चुनिएः:",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "Which one of the following Carnatic music ragas is similar to Raga Bilawal in Hindustani music ? Emergence of urban life",
+      "original_questionHi": "निम्नलिखित में से कर्नाटिक संगीत के किस राग का हिन्ुस्तानी संगीत के राग बिलावल से मेल है? शहरी जीवन के उद्व से मुद्रा अ्थव्यवस्था कीओर संक्रमण से नीचे दिए गए कूट का प्रयोग कर उत्तर चुनिएः:"
+    },
+    {
+      "_originalIndex": "12+17",
+      "questionNumber": 1,
+      "questionEn": "The earliest epigraphic use of the place-value system in India is found in the Mankani plates from Gujarat (AD 595 -596). Statement I suggests that spinning was",
+      "questionHi": "एका आंदोलन और बारदोली सत्याग्रह के बारे में निम्नलिखित में से कौन-सा कथन सही है? ऋगवेद में, पानी निकालने के लिए अश्म चक्र (पत्थर की घिरनी) और आहाव (पट्टी से कसा हुआ लकड़ी का डोल) के उपयोग के साक्ष्य हैं।",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "The earliest epigraphic use of the place-value system in India is found in the Mankani plates from Gujarat (AD 595 -596). Statement I suggests that spinning was",
+      "original_questionHi": "एका आंदोलन और बारदोली सत्याग्रह के बारे में निम्नलिखित में से कौन-सा कथन सही है? ऋगवेद में, पानी निकालने के लिए अश्म चक्र (पत्थर की घिरनी) और आहाव (पट्टी से कसा हुआ लकड़ी का डोल) के उपयोग के साक्ष्य हैं।"
+    },
+    {
+      "_originalIndex": "24+6",
+      "questionNumber": 1,
+      "questionEn": "Malegitti Shivalaya, Badami",
+      "questionHi": "निम्लिखित अभिकथन पर विचार कीजिए: अत्यंत नूतन (प्लीस्टोसीन)काल में या तो यमुना, कभी सिन्धु में प्रवाहित होती थी, या फिर सतलुज, यमुना मेंप्रवाहित होती थी तथा इनमें से किसी एक की प्रमुख सहायक नदी या तो गंगा से सिंधु में अथवा इसके विपरीत, स्थानांतरित हुई थी। निम्नलिखित में से कौन-सा/कौन-से, उपर्यक्त अभिकथन का/के आधार है/हैं? ऋवेद का नदी-सुक्त",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "Malegitti Shivalaya, Badami",
+      "original_questionHi": "निम्लिखित अभिकथन पर विचार कीजिए: अत्यंत नूतन (प्लीस्टोसीन)काल में या तो यमुना, कभी सिन्धु में प्रवाहित होती थी, या फिर सतलुज, यमुना मेंप्रवाहित होती थी तथा इनमें से किसी एक की प्रमुख सहायक नदी या तो गंगा से सिंधु में अथवा इसके विपरीत, स्थानांतरित हुई थी। निम्नलिखित में से कौन-सा/कौन-से, उपर्यक्त अभिकथन का/के आधार है/हैं? ऋवेद का नदी-सुक्त"
+    },
+    {
+      "_originalIndex": "0+17",
+      "questionNumber": 1,
+      "questionEn": "Which one of the following statements about the Eka Movement and Bardoli Satyagraha is correct? The Eka Movement was throughout supported and organized by the Congress while Bardoli Satyagraha was initially independent of Congress influence and was only in the last stages supported by the Congress. There is evidence in the Rigveda of the use of ashma chakra (stone pulley wheel) and ahava (strapped wooden pails) to draw up water.",
+      "questionHi": "(vasrimiler9) 29o1v192 livi0 asosnoisnimsxd निम्नलिखित में से किस मंदिर/किन मंदिरों में नागर-शैली के शिखर हैं? मालेगिटी शिवालय, बादामी",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "Which one of the following statements about the Eka Movement and Bardoli Satyagraha is correct? The Eka Movement was throughout supported and organized by the Congress while Bardoli Satyagraha was initially independent of Congress influence and was only in the last stages supported by the Congress. There is evidence in the Rigveda of the use of ashma chakra (stone pulley wheel) and ahava (strapped wooden pails) to draw up water.",
+      "original_questionHi": "(vasrimiler9) 29o1v192 livi0 asosnoisnimsxd निम्नलिखित में से किस मंदिर/किन मंदिरों में नागर-शैली के शिखर हैं? मालेगिटी शिवालय, बादामी"
+    },
+    {
+      "_originalIndex": 12,
+      "questionNumber": 1,
+      "questionEn": null,
+      "questionHi": "भारत में स्थानीय-मान पद्धति (place-value system) के|9. उपयोग से संबंधित निम्नलिखित कथनों पर विचार कीजिए: भारत में स्थानीय-मान पद्ति का सर्वप्रथम उत्कीर्ण-अभिलेखीय उपयोग गुजरात की मनकणी पट्टिकाओं (595 -596 AD) में मिलता है। कथन I संकेत करता है कि कताई घर पर किया जाने वाला एक श्रम-साध्य कार्य था।",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": null,
+      "original_questionHi": "भारत में स्थानीय-मान पद्धति (place-value system) के|9. उपयोग से संबंधित निम्नलिखित कथनों पर विचार कीजिए: भारत में स्थानीय-मान पद्ति का सर्वप्रथम उत्कीर्ण-अभिलेखीय उपयोग गुजरात की मनकणी पट्टिकाओं (595 -596 AD) में मिलता है। कथन I संकेत करता है कि कताई घर पर किया जाने वाला एक श्रम-साध्य कार्य था।"
+    },
+    {
+      "_originalIndex": 24,
+      "questionNumber": 1,
+      "questionEn": null,
+      "questionHi": "सेनगुवन : चेर",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": null,
+      "original_questionHi": "सेनगुवन : चेर"
+    },
+    {
+      "_originalIndex": "1+7",
+      "questionNumber": 2,
+      "questionEn": "The artificially fixed rupee-sterling exchange rate prescribed by the Hilton-Young Commission (1926) was adopted by the British Government for which one of the following reasons? Transition to money economy Select the answer using the code given below :",
+      "questionHi": "हिल्टन-यंग कमीशन (1926) द्वारा कृत्रिम रूप से निधारित की गई रुपए-स्टलिंग विनिमय दर को ब्रिटिश सरकारद्वारा निम्नलिखित में से किस कारण से अंगीकार किया गया था ?",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "The artificially fixed rupee-sterling exchange rate prescribed by the Hilton-Young Commission (1926) was adopted by the British Government for which one of the following reasons? Transition to money economy Select the answer using the code given below :",
+      "original_questionHi": "हिल्टन-यंग कमीशन (1926) द्वारा कृत्रिम रूप से निधारित की गई रुपए-स्टलिंग विनिमय दर को ब्रिटिश सरकारद्वारा निम्नलिखित में से किस कारण से अंगीकार किया गया था ?"
+    },
+    {
+      "_originalIndex": "13+18",
+      "questionNumber": 2,
+      "questionEn": "In the ninth century, place-values become general in inscriptions all over India. Statement II suggests the extent of the scientific knowledge that the Harappans possessed.",
+      "questionHi": "तऋगवेद में पर्श/कुलीश (कुल्हा़ी) और दात्र/सृणी (हसिया) जैसे उपकरणों के उपयोग का उल्लेख मिलता है।",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "In the ninth century, place-values become general in inscriptions all over India. Statement II suggests the extent of the scientific knowledge that the Harappans possessed.",
+      "original_questionHi": "तऋगवेद में पर्श/कुलीश (कुल्हा़ी) और दात्र/सृणी (हसिया) जैसे उपकरणों के उपयोग का उल्लेख मिलता है।"
+    },
+    {
+      "_originalIndex": "25+7",
+      "questionNumber": 2,
+      "questionEn": "Huchimalligudi Temple, Aihole",
+      "questionHi": "रॉबरट ब्रस फुट द्ारा किए गए सतलुज और यमुना के अन्वेषण असिक्नी: झेलम",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "Huchimalligudi Temple, Aihole",
+      "original_questionHi": "रॉबरट ब्रस फुट द्ारा किए गए सतलुज और यमुना के अन्वेषण असिक्नी: झेलम"
+    },
+    {
+      "_originalIndex": "1+18",
+      "questionNumber": 2,
+      "questionEn": "Mention has been made in the Rigveda of the use of implements like parashu/ kulisha (axe) and datra /sreni (sickle).",
+      "questionHi": "हुचिमलिलगुड़ी मंदिर, ऐहोल",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "Mention has been made in the Rigveda of the use of implements like parashu/ kulisha (axe) and datra /sreni (sickle).",
+      "original_questionHi": "हुचिमलिलगुड़ी मंदिर, ऐहोल"
+    },
+    {
+      "_originalIndex": 13,
+      "questionNumber": 2,
+      "questionEn": null,
+      "questionHi": "नवीं शताब्दी में, संपर्ण भारत में उत्कीर्ण लेखों में स्थानीय-मान सामान्य हो जाते हैं। कथन II हइ़प्पा के लोगों में वज्ञानिक ज़ान के प्रसार की ओर संकेत करता है।",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": null,
+      "original_questionHi": "नवीं शताब्दी में, संपर्ण भारत में उत्कीर्ण लेखों में स्थानीय-मान सामान्य हो जाते हैं। कथन II हइ़प्पा के लोगों में वज्ञानिक ज़ान के प्रसार की ओर संकेत करता है।"
+    },
+    {
+      "_originalIndex": 25,
+      "questionNumber": 2,
+      "questionEn": null,
+      "questionHi": "भारत में, आकार की दृष् से, साँची स्तूप के बाद इसका ही स्थान था। उदियनजेरल : चोल",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": null,
+      "original_questionHi": "भारत में, आकार की दृष् से, साँची स्तूप के बाद इसका ही स्थान था। उदियनजेरल : चोल"
+    },
+    {
+      "_originalIndex": "2+8",
+      "questionNumber": 3,
+      "questionEn": "Consider the following statements : I. Pali texts contain the first definite references to coins, e.g. kahapana, nikkha, kamsa, and kakanika. II. The literary evidence from Pali texts is corroborated by archaeological evidence of punch-marked coins from many sites, most of them made of silver. The above statements have been associated 6. with which of the following ? from India terms of gold",
+      "questionHi": "निम्नलिखित कथनों पर विचार कीजिए: I. पाली ग्रंथों में, कहापण, निक्खा, कन्स और काकणिका जैसे सिक्कों के प्रथम स्पष् संदर्भ समाविष्ट हैं। पाली ग्रंथो से ्रापत साहित्िक सक्ष्य की पु्ट, अनेक स्थलों से प्रात्त आहत सिक्कों (punch-marked coins) के पुरातात्विक प्रमाण द्वारा होती है, इन सिक्कों में से अधिकांश चाँदी से बने हैं। उपर्यक्त कथन निम्नलिखित मे से किनसे संबद्ध हैं?",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "Consider the following statements : I. Pali texts contain the first definite references to coins, e.g. kahapana, nikkha, kamsa, and kakanika. II. The literary evidence from Pali texts is corroborated by archaeological evidence of punch-marked coins from many sites, most of them made of silver. The above statements have been associated 6. with which of the following ? from India terms of gold",
+      "original_questionHi": "निम्नलिखित कथनों पर विचार कीजिए: I. पाली ग्रंथों में, कहापण, निक्खा, कन्स और काकणिका जैसे सिक्कों के प्रथम स्पष् संदर्भ समाविष्ट हैं। पाली ग्रंथो से ्रापत साहित्िक सक्ष्य की पु्ट, अनेक स्थलों से प्रात्त आहत सिक्कों (punch-marked coins) के पुरातात्विक प्रमाण द्वारा होती है, इन सिक्कों में से अधिकांश चाँदी से बने हैं। उपर्यक्त कथन निम्नलिखित मे से किनसे संबद्ध हैं?"
+    },
+    {
+      "_originalIndex": "14+19",
+      "questionNumber": 3,
+      "questionEn": "The place-values have been found in Sanskrit inscriptions in South-east Asia as early as the seventh century. Which of the statements given above are correct? Statement III suggests the emergence of",
+      "questionHi": "ऋवेद से पहले भी, भमि को जोतने और गाड़ियों को खींचने के लिए बैल के उपयोग का इतिहास मिलता है। नीचे दिए गए कट का प्रयोग कर उत्तर चुनिए:",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "केवल 1 और 2",
+        "b": "केवल 1 और 3",
+        "c": "केवल 2 और 3",
+        "d": "1, 2 और 3"
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "The place-values have been found in Sanskrit inscriptions in South-east Asia as early as the seventh century. Which of the statements given above are correct? Statement III suggests the emergence of",
+      "original_questionHi": "ऋवेद से पहले भी, भमि को जोतने और गाड़ियों को खींचने के लिए बैल के उपयोग का इतिहास मिलता है। नीचे दिए गए कट का प्रयोग कर उत्तर चुनिए:"
+    },
+    {
+      "_originalIndex": "26+8",
+      "questionNumber": 3,
+      "questionEn": "Dashavatara Temple, Deogarh",
+      "questionHi": "सिन्धु और गंगा, दोनों नदी प्रणालियों ें डॉलफ़िनों की समान प्रजातियों की उपस्थिति नीचे दिए गए कूट का प्रयोग कर उत्तर चुनिए: परुष्णी :रावी",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "केवल 1",
+        "b": "केवल 1 और 3",
+        "c": "केवल 2 और 3",
+        "d": "1, 2 और 3"
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "Dashavatara Temple, Deogarh",
+      "original_questionHi": "सिन्धु और गंगा, दोनों नदी प्रणालियों ें डॉलफ़िनों की समान प्रजातियों की उपस्थिति नीचे दिए गए कूट का प्रयोग कर उत्तर चुनिए: परुष्णी :रावी"
+    },
+    {
+      "_originalIndex": "2+19",
+      "questionNumber": 3,
+      "questionEn": "There is a history of the use of ox, even before the Rigveda, for ploughing the land and pulling the carts. Select the answer using the code given below :",
+      "questionHi": "दशावतार मंदिर, देवगढ़",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "There is a history of the use of ox, even before the Rigveda, for ploughing the land and pulling the carts. Select the answer using the code given below :",
+      "original_questionHi": "दशावतार मंदिर, देवगढ़"
+    },
+    {
+      "_originalIndex": 14,
+      "questionNumber": 3,
+      "questionEn": null,
+      "questionHi": "दक्षिण-पूर्व एशिया में संस्कृत के उत्कीर्ण लेखों में स्थानीय-मान सातवीं शताब्दी के प्रारंभ से ही मिलते हैं। उपर्यक्त कथनो में से कौन-से सही हैं? कथन I साझी संपत्ि व्यवस्था के उद्व की ओर संकेत करता है। नीचे दिए गए कूट का प्रयोग कर उत्तर चुनिए:",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "केवल 1 और 2",
+        "b": "केवल 1 और 3",
+        "c": "केवल 2 और 3",
+        "d": "1, 2 और 3"
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": null,
+      "original_questionHi": "दक्षिण-पूर्व एशिया में संस्कृत के उत्कीर्ण लेखों में स्थानीय-मान सातवीं शताब्दी के प्रारंभ से ही मिलते हैं। उपर्यक्त कथनो में से कौन-से सही हैं? कथन I साझी संपत्ि व्यवस्था के उद्व की ओर संकेत करता है। नीचे दिए गए कूट का प्रयोग कर उत्तर चुनिए:"
+    },
+    {
+      "_originalIndex": 26,
+      "questionNumber": 3,
+      "questionEn": null,
+      "questionHi": "अमरावती मूर्तिकला शैली का परवती दक्षिण भारतीय मर्तिकला पर गहरा प्रभाव पड़ा, और उसकी रचनाओं (products) को श्रीलंका और दक्षिण-पूर्व एशिया ले जाया गया था। नीचे दिए गए कूट का प्रयोग कर उत्तर चुनिए: नेदुन्जेलियन : पांड्य नीचे दिए गए कूट का प्रयोग कर उत्तर चुनिए:",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "केवल 1",
+        "b": "केवल 1 और 3",
+        "c": "केवल 2 और 3",
+        "d": "1, 2 और 3"
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": null,
+      "original_questionHi": "अमरावती मूर्तिकला शैली का परवती दक्षिण भारतीय मर्तिकला पर गहरा प्रभाव पड़ा, और उसकी रचनाओं (products) को श्रीलंका और दक्षिण-पूर्व एशिया ले जाया गया था। नीचे दिए गए कूट का प्रयोग कर उत्तर चुनिए: नेदुन्जेलियन : पांड्य नीचे दिए गए कूट का प्रयोग कर उत्तर चुनिए:"
+    },
+    {
+      "_originalIndex": "27+9",
+      "questionNumber": 4,
+      "questionEn": "Which of the following temples has/have a Nagara-style shikhara ? Virupaksha Temple, Pattadakal Select the answer using the code given below :",
+      "questionHi": "यव्यावती :ब्यास नीचे दिए गए कूट का प्रयोग कर उत्तर चुनिए:",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "1 और 2",
+        "b": "केवल 2",
+        "c": "1और 3",
+        "d": "केवल 3"
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "Which of the following temples has/have a Nagara-style shikhara ? Virupaksha Temple, Pattadakal Select the answer using the code given below :",
+      "original_questionHi": "यव्यावती :ब्यास नीचे दिए गए कूट का प्रयोग कर उत्तर चुनिए:"
+    },
+    {
+      "_originalIndex": 3,
+      "questionNumber": 4,
+      "questionEn": null,
+      "questionHi": "विरुपाक्ष मंदिर, पृदकल नीचे दिए गए कूट का प्रयोग कर उतर चुनिए",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "1 और 2",
+        "b": "2 और 3",
+        "c": "केवल 3",
+        "d": "3 और 4"
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": null,
+      "original_questionHi": "विरुपाक्ष मंदिर, पृदकल नीचे दिए गए कूट का प्रयोग कर उतर चुनिए"
+    },
+    {
+      "_originalIndex": "4+10",
+      "questionNumber": 5,
+      "questionEn": "Among the four main forms of existence of life recognized in Jainism, which one of the following is not included ?",
+      "questionHi": "जैन धर्म में मान्यता-प्रासत जीवन के अस्त्व के चार मुख्य रूपों में निम्नलिखित में से कौन-सा सम्मिलित नहीं है?",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "देव (ईश्वर)",
+        "b": "यक्ष (अर्धदेव)",
+        "c": "मनुष्य (मानव)",
+        "d": "तिर्यंच (पशु और पादप)"
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "Among the four main forms of existence of life recognized in Jainism, which one of the following is not included ?",
+      "original_questionHi": "जैन धर्म में मान्यता-प्रासत जीवन के अस्त्व के चार मुख्य रूपों में निम्नलिखित में से कौन-सा सम्मिलित नहीं है?"
+    },
+    {
+      "_originalIndex": "5+11",
+      "questionNumber": 6,
+      "questionEn": "The Hallisalasya painting in the Bagh Caves represents :",
+      "questionHi": "बाघ गुफाओं में विदधयमान हल्लसालस्य चित्र क्या प्रदर्शित करता है?",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "एक आनंदमय लोकनृत्य",
+        "b": "चिंतनशील मुद्र में बु्",
+        "c": "कैलाश पर शिव और पार्वती का चित्रण",
+        "d": "समुद्मंथन (समुद्रका मंथन)"
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "The Hallisalasya painting in the Bagh Caves represents :",
+      "original_questionHi": "बाघ गुफाओं में विदधयमान हल्लसालस्य चित्र क्या प्रदर्शित करता है?"
+    },
+    {
+      "_originalIndex": 22,
+      "questionNumber": 7,
+      "questionEn": "Consider the following statements relating to 9. the use of the place-value system in India :",
+      "questionHi": null,
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "Consider the following statements relating to 9. the use of the place-value system in India :",
+      "original_questionHi": null
+    },
+    {
+      "_originalIndex": "16+23",
+      "questionNumber": 8,
+      "questionEn": "Consider the following statements about the archaeological findings in Harappan towns : I. There is wide occurrence of 10. spindle-whorls in the houses but absence of spinning wheels. II. Weights and measurement scales, complete with graduations have been discovered. III. There are houses built in large part with baked bricks, around relatively spacious courtyards, with their own wells, bathing platforms, and large rooms. Which of the following inferences can be drawn from the above statements ?",
+      "questionHi": "हडप्पा नगरों में पुरातात्विकखोजों के बारे में निम्नलिखित कथनों पर विचार कीजिए: I. घरों में तकली की प्रचुर उपलब्धता है किंतु चरखे अनुपलब्ध हैं। II. अंशांकित बाट और मापन पैमानों की खोज हुई है। III. अपेक्षाकृत रूप से विस्तृत प्रांगण के चारों ओर अधिकतर पकी हुई ईंटों से निर्मित घर मिले हैं,जिनके अपने कएँ हैं, स्नान करने के चबूतरे हैं, और बड़़े कमरे हैं। उपर्ुक्त कथनों से निम्नलिखित में से कौन-से निष्कर्ष निकाले जा सकते हैं?",
+      "marks": 10,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": "Consider the following statements about the archaeological findings in Harappan towns : I. There is wide occurrence of 10. spindle-whorls in the houses but absence of spinning wheels. II. Weights and measurement scales, complete with graduations have been discovered. III. There are houses built in large part with baked bricks, around relatively spacious courtyards, with their own wells, bathing platforms, and large rooms. Which of the following inferences can be drawn from the above statements ?",
+      "original_questionHi": "हडप्पा नगरों में पुरातात्विकखोजों के बारे में निम्नलिखित कथनों पर विचार कीजिए: I. घरों में तकली की प्रचुर उपलब्धता है किंतु चरखे अनुपलब्ध हैं। II. अंशांकित बाट और मापन पैमानों की खोज हुई है। III. अपेक्षाकृत रूप से विस्तृत प्रांगण के चारों ओर अधिकतर पकी हुई ईंटों से निर्मित घर मिले हैं,जिनके अपने कएँ हैं, स्नान करने के चबूतरे हैं, और बड़़े कमरे हैं। उपर्ुक्त कथनों से निम्नलिखित में से कौन-से निष्कर्ष निकाले जा सकते हैं?"
+    },
+    {
+      "_originalIndex": 28,
+      "questionNumber": 12,
+      "questionEn": null,
+      "questionHi": "प्रारंभिक बौद्ध मूतिविद्या में रिक्त स्थान (empty seat) क्या दर्शाता है?",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": null,
+      "original_questionHi": "प्रारंभिक बौद्ध मूतिविद्या में रिक्त स्थान (empty seat) क्या दर्शाता है?"
+    },
+    {
+      "_originalIndex": 29,
+      "questionNumber": 13,
+      "questionEn": null,
+      "questionHi": "निम्नलिखित नदियों के प्राचीन और आधुनिक नामों के युम्मों में से कौन-सा/कौन-से सही सुमेलित है/हैं? 1वितस्ता :चिनाब",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": null,
+      "original_questionHi": "निम्नलिखित नदियों के प्राचीन और आधुनिक नामों के युम्मों में से कौन-सा/कौन-से सही सुमेलित है/हैं? 1वितस्ता :चिनाब"
+    },
+    {
+      "_originalIndex": 30,
+      "questionNumber": 14,
+      "questionEn": null,
+      "questionHi": "अमरावती स्तूप और उसकी उद्भृत मूर्तिकला (relief sculpture) के बारे में निम्नलिखित में से कौन-सा/कौन-से कथन सही है/हैं? यह निचली कृष्णा घाटी में स्थित था",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": null,
+      "original_questionHi": "अमरावती स्तूप और उसकी उद्भृत मूर्तिकला (relief sculpture) के बारे में निम्नलिखित में से कौन-सा/कौन-से कथन सही है/हैं? यह निचली कृष्णा घाटी में स्थित था"
+    },
+    {
+      "_originalIndex": 31,
+      "questionNumber": 15,
+      "questionEn": null,
+      "questionHi": "प्रारंभिकऐतिहासिक तमिलकम में राजा और उसकी वंशावली के निम्नलिखित में से कौन-सा/कौन-से युम सही सुमेलित नहीं ह/हैं?",
+      "marks": null,
+      "wordLimit": null,
+      "options": {
+        "a": "",
+        "b": "",
+        "c": "",
+        "d": ""
+      },
+      "directive": null,
+      "pageNumber": null,
+      "original_questionEn": null,
+      "original_questionHi": "प्रारंभिकऐतिहासिक तमिलकम में राजा और उसकी वंशावली के निम्नलिखित में से कौन-सा/कौन-से युम सही सुमेलित नहीं ह/हैं?"
+    }
+  ],
+  "validation": {
+    "status": "FAIL",
+    "errors": [
+      "MISSING QUESTION 9",
+      "MISSING QUESTION 10",
+      "MISSING QUESTION 11",
+      "MISSING QUESTION 16",
+      "MISSING QUESTION 17",
+      "MISSING QUESTION 18",
+      "MISSING QUESTION 19",
+      "MISSING QUESTION 20",
+      "DUPLICATE QUESTION NUMBER 1 FOUND",
+      "DUPLICATE QUESTION NUMBER 2 FOUND",
+      "DUPLICATE QUESTION NUMBER 3 FOUND",
+      "DUPLICATE QUESTION NUMBER 4 FOUND"
+    ],
+    "warnings": [
+      "BILINGUAL PAIRING UNCERTAIN FOR QUESTION 1",
+      "BILINGUAL PAIRING UNCERTAIN FOR QUESTION 1",
+      "BILINGUAL PAIRING UNCERTAIN FOR QUESTION 2",
+      "BILINGUAL PAIRING UNCERTAIN FOR QUESTION 2",
+      "BILINGUAL PAIRING UNCERTAIN FOR QUESTION 3",
+      "BILINGUAL PAIRING UNCERTAIN FOR QUESTION 3",
+      "BILINGUAL PAIRING UNCERTAIN FOR QUESTION 4",
+      "BILINGUAL PAIRING UNCERTAIN FOR QUESTION 7",
+      "BILINGUAL PAIRING UNCERTAIN FOR QUESTION 12",
+      "BILINGUAL PAIRING UNCERTAIN FOR QUESTION 13",
+      "BILINGUAL PAIRING UNCERTAIN FOR QUESTION 14",
+      "BILINGUAL PAIRING UNCERTAIN FOR QUESTION 15",
+      "MISSING MARKS FOR QUESTION 1",
+      "MISSING MARKS FOR QUESTION 1",
+      "MISSING MARKS FOR QUESTION 1",
+      "MISSING MARKS FOR QUESTION 1",
+      "EMPTY ENGLISH IN QUESTION 1",
+      "UNPAIRED_HINDI IN QUESTION 1",
+      "MISSING MARKS FOR QUESTION 1",
+      "EMPTY ENGLISH IN QUESTION 1",
+      "UNPAIRED_HINDI IN QUESTION 1",
+      "MISSING MARKS FOR QUESTION 1",
+      "MISSING MARKS FOR QUESTION 2",
+      "MISSING MARKS FOR QUESTION 2",
+      "MISSING MARKS FOR QUESTION 2",
+      "MISSING MARKS FOR QUESTION 2",
+      "EMPTY ENGLISH IN QUESTION 2",
+      "UNPAIRED_HINDI IN QUESTION 2",
+      "MISSING MARKS FOR QUESTION 2",
+      "EMPTY ENGLISH IN QUESTION 2",
+      "UNPAIRED_HINDI IN QUESTION 2",
+      "MISSING MARKS FOR QUESTION 2",
+      "MISSING MARKS FOR QUESTION 3",
+      "MISSING MARKS FOR QUESTION 3",
+      "MISSING MARKS FOR QUESTION 3",
+      "MISSING MARKS FOR QUESTION 3",
+      "EMPTY ENGLISH IN QUESTION 3",
+      "UNPAIRED_HINDI IN QUESTION 3",
+      "MISSING MARKS FOR QUESTION 3",
+      "EMPTY ENGLISH IN QUESTION 3",
+      "UNPAIRED_HINDI IN QUESTION 3",
+      "MISSING MARKS FOR QUESTION 3",
+      "MISSING MARKS FOR QUESTION 4",
+      "EMPTY ENGLISH IN QUESTION 4",
+      "UNPAIRED_HINDI IN QUESTION 4",
+      "MISSING MARKS FOR QUESTION 4",
+      "MISSING MARKS FOR QUESTION 5",
+      "MISSING MARKS FOR QUESTION 6",
+      "EMPTY HINDI IN QUESTION 7",
+      "UNPAIRED_ENGLISH IN QUESTION 7",
+      "MISSING MARKS FOR QUESTION 7",
+      "EMPTY ENGLISH IN QUESTION 12",
+      "UNPAIRED_HINDI IN QUESTION 12",
+      "MISSING MARKS FOR QUESTION 12",
+      "EMPTY ENGLISH IN QUESTION 13",
+      "UNPAIRED_HINDI IN QUESTION 13",
+      "MISSING MARKS FOR QUESTION 13",
+      "EMPTY ENGLISH IN QUESTION 14",
+      "UNPAIRED_HINDI IN QUESTION 14",
+      "MISSING MARKS FOR QUESTION 14",
+      "EMPTY ENGLISH IN QUESTION 15",
+      "UNPAIRED_HINDI IN QUESTION 15",
+      "MISSING MARKS FOR QUESTION 15",
+      "HINDI_FIELD_CONTAINS_EXCESSIVE_LATIN IN QUESTION 1",
+      "HINDI_FIELD_CONTAINS_EXCESSIVE_LATIN IN QUESTION 12"
+    ]
+  }
+}
