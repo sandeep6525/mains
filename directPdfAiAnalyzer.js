@@ -93,7 +93,7 @@ Respond strictly in JSON.`;
   return parsed;
 }
 
-export async function mapFragmentsToQuestion(questionNumber, allFragments) {
+export async function mapFragmentsToQuestion(fileUri, questionNumber, allFragments) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY is not configured');
@@ -103,24 +103,25 @@ export async function mapFragmentsToQuestion(questionNumber, allFragments) {
 
   const fragmentsJson = JSON.stringify(allFragments, null, 2);
 
-  const prompt = `You are a rigorous data mapper and text classifier.
-I am providing you a JSON list of text fragments extracted via OCR from an examination paper.
+  const prompt = `You are a rigorous data mapper and text cleaner.
+I am providing you an examination PDF and a JSON list of text fragments extracted via OCR.
 Each fragment has an "id", "label", and "text".
 
 Your task:
 1. Identify EVERY fragment that belongs to Question ${questionNumber}, including all of its subparts (e.g., ${questionNumber}(a), options) and any relevant metadata (instructions, word limits, marks, section headers).
-2. Classify EACH fragment by mapping its ID to the correct category: question, subquestion, instruction, or metadata.
-3. Determine the subquestion hierarchy (e.g., (a), (b), (c)). If a fragment contains sub-subquestions like (i) and (ii), you MUST create distinct subQuestion objects. It is perfectly fine for multiple subquestion objects to share the same \`sourceFragmentIds\` if they originated from the same fragment.
-4. Identify any metadata fragments (MARKS, WORD_LIMIT, SECTION_HEADER, PAGE_HEADER, PAGE_FOOTER, NOISE).
-5. If you are uncertain whether a fragment is question content or metadata, DO NOT delete it. Classify it as UNRESOLVED_OCR_EVIDENCE.
+2. Separate the actual question text from instructions, marks, word limits, section headers, and OCR noise.
+3. Determine the language of the text. If English and Hindi are present, separate them into the _en and _hi fields. If it's a mix, put it in the _en field and it will be flagged later.
+4. Maintain the existing subquestion hierarchy (e.g., (a), (b), (c)). If an OCR fragment contains sub-subquestions like (i) and (ii) (e.g. "(i) Haemophilia (ii) Thalassemia"), you MUST split them into their own distinct \`subQuestions\` objects. It is perfectly fine for multiple subquestion objects to share the same \`sourceFragmentIds\` if they originated from the same fragment. Passages/instructions applying to all subquestions go in the parent instruction fields.
+5. Identify any metadata fragments (WORD_LIMIT, MARKS, SECTION_HEADER, PAGE_HEADER, PAGE_FOOTER, NOISE).
+6. Return the cleaned, semantic representation.
 
-CRITICAL RULES FOR METADATA SEPARATION:
-- NEVER invent, paraphrase, or rewrite text. We will reconstruct the question deterministically using ONLY the fragment IDs you map.
-- If a fragment contains marks (e.g. "10x5=50", "20", "10+10"), extract the numeric value into the \`marks\` field AND map its fragment ID to \`metadataFragments\` with type "MARKS". Do NOT include it in \`questionFragmentIds\` or \`subQuestion.sourceFragmentIds\` unless it's impossible to separate from actual question text.
-- If an instruction introduces questions (e.g. "Write short notes on the following in about 150 words each:"), map its fragment ID to \`instructionFragmentIds\`, NOT to the question text.
-- Page headers, footers (e.g. "KVMS-P-ZOY 4") must be mapped to \`metadataFragments\` (PAGE_FOOTER / PAGE_HEADER) and EXCLUDED from question/subquestion fragment IDs.
-- Legitimate numbers inside actual question text (e.g. "Describe one-way and two-way F-test") must remain in question/subquestion fragment IDs.
-- EVERY fragment from the input must be mapped to exactly ONE primary semantic owner (instruction, question, subquestion, or metadata), though shared metadata may overlap. No fragment may disappear.
+CRITICAL RULES:
+- DO NOT invent new text. DO NOT paraphrase. DO NOT correct OCR typos.
+- Reconstruct text ONLY using the EXACT SUBSTRINGS found in the provided OCR fragments.
+- DO NOT artificially split sentences if it removes context. Just ensure that the exact text is preserved.
+- If marks are embedded in text (like "10x5=50" or "10+10"), extract the numeric value into the \`marks\` field, but you must still preserve the EXACT original OCR string in the text field if it cannot be cleanly separated into a standalone metadata fragment.
+- Do not silently correct things like "Null hypothesis: ." to "Null hypothesis."
+- If any source fragment cannot be classified confidently, assign it to a text field or instruction field rather than dropping it or rewriting it.
 
 Fragments JSON:
 ${fragmentsJson}
@@ -131,14 +132,10 @@ Respond strictly in JSON format matching the schema.`;
     type: "OBJECT",
     properties: {
       question_number: { type: "INTEGER" },
-      instructionFragmentIds: {
-        type: "ARRAY",
-        items: { type: "STRING" }
-      },
-      questionFragmentIds: {
-        type: "ARRAY",
-        items: { type: "STRING" }
-      },
+      question_en: { type: "STRING" },
+      question_hi: { type: "STRING" },
+      instruction_en: { type: "STRING" },
+      instruction_hi: { type: "STRING" },
       word_limit: { type: "INTEGER" },
       marks: { type: "INTEGER" },
       section: { type: "STRING" },
@@ -148,18 +145,19 @@ Respond strictly in JSON format matching the schema.`;
           type: "OBJECT",
           properties: {
             label: { type: "STRING" },
+            text_en: { type: "STRING" },
+            text_hi: { type: "STRING" },
             sourceFragmentIds: {
               type: "ARRAY",
               items: { type: "STRING" }
             }
           },
-          required: ["label", "sourceFragmentIds"]
+          required: ["label", "text_en", "text_hi", "sourceFragmentIds"]
         }
       },
       sourceFragmentIds: {
         type: "ARRAY",
-        items: { type: "STRING" },
-        description: "ALL fragments that belong to this question structure"
+        items: { type: "STRING" }
       },
       metadataFragments: {
         type: "ARRAY",
@@ -173,18 +171,18 @@ Respond strictly in JSON format matching the schema.`;
         }
       }
     },
-    required: ["question_number", "instructionFragmentIds", "questionFragmentIds", "subQuestions", "sourceFragmentIds", "metadataFragments"]
+    required: ["question_number", "question_en", "question_hi", "instruction_en", "instruction_hi", "subQuestions", "sourceFragmentIds", "metadataFragments"]
   };
-
-  const parts = [];
-  parts.push({ text: prompt });
 
   const response = await ai.models.generateContent({
     model,
     contents: [
       {
           role: 'user',
-          parts: parts
+          parts: [
+              { fileData: { fileUri: fileUri, mimeType: 'application/pdf' } },
+              { text: prompt }
+          ]
       }
     ],
     config: {
@@ -213,29 +211,6 @@ Respond strictly in JSON format matching the schema.`;
     if (cleanText.endsWith('```')) cleanText = cleanText.substring(0, cleanText.length - 3);
     cleanText = cleanText.trim();
     parsed = JSON.parse(cleanText);
-
-    // Deterministic Reconstruction from original OCR fragments
-    const buildText = (fragIds, lang) => {
-      if (!fragIds || !Array.isArray(fragIds)) return null;
-      const textArr = fragIds.map(id => {
-         const f = allFragments.find(x => x.id === id);
-         return f ? (lang === 'en' ? f.english : f.hindi) : "";
-      }).filter(Boolean);
-      return textArr.length > 0 ? textArr.join('\n').trim() : null;
-    };
-
-    parsed.instruction_en = buildText(parsed.instructionFragmentIds, 'en');
-    parsed.instruction_hi = buildText(parsed.instructionFragmentIds, 'hi');
-    parsed.question_en = buildText(parsed.questionFragmentIds, 'en');
-    parsed.question_hi = buildText(parsed.questionFragmentIds, 'hi');
-
-    if (parsed.subQuestions) {
-      parsed.subQuestions.forEach(sq => {
-        sq.text_en = buildText(sq.sourceFragmentIds, 'en');
-        sq.text_hi = buildText(sq.sourceFragmentIds, 'hi');
-      });
-    }
-
     return parsed;
   } catch (e) {
     console.error(`[DIRECT-AI] Mapping JSON Parse Error.`);

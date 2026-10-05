@@ -62,6 +62,7 @@ model PyqQuestion {
   updatedAt       DateTime @updatedAt
   question_number Int
   isPublished     Boolean  @default(true)
+  ingestionDocumentId String?
   
   // Logical identity of a question within a paper
   @@unique([year, paper_code, question_number])

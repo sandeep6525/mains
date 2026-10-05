@@ -910,6 +910,37 @@ const Review = () => {
 
                     {/* Question Content */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                      
+                      {(q.instructionEn || q.instructionHi) && (
+                        <div style={{ padding: '16px', backgroundColor: 'var(--bg-tertiary)', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--border-medium)' }}>
+                          <h4 style={{ fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em', marginBottom: '12px' }}>Instructions</h4>
+                          {q.instructionEn && (
+                            <div style={{ marginBottom: q.instructionHi ? '12px' : '0' }}>
+                              <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>English:</span>
+                              <textarea 
+                                disabled={isPublished}
+                                className="form-input"
+                                style={{ width: '100%', minHeight: '40px', padding: '8px', fontSize: '0.875rem' }}
+                                value={q.instructionEn}
+                                onChange={(e) => handleQuestionChange(idx, 'instructionEn', e.target.value)}
+                              />
+                            </div>
+                          )}
+                          {q.instructionHi && (
+                            <div>
+                              <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Hindi:</span>
+                              <textarea 
+                                disabled={isPublished}
+                                className="form-input"
+                                style={{ width: '100%', minHeight: '40px', padding: '8px', fontSize: '0.875rem' }}
+                                value={q.instructionHi}
+                                onChange={(e) => handleQuestionChange(idx, 'instructionHi', e.target.value)}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
+
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                           <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.05em' }}>English</span>

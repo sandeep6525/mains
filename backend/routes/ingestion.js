@@ -673,10 +673,13 @@ router.post('/document/:id/publish', async (req, res) => {
              ...(finalDirective !== null ? { directive: finalDirective } : {}),
              ...(finalDirectiveTip !== null ? { directive_tip: finalDirectiveTip } : {}),
              ...(finalTopicId !== null ? { topic_id: finalTopicId, topic_title: finalTopicTitle } : {}),
-             ...(finalModelFramework !== null ? { model_framework: finalModelFramework } : {})
+             ...(finalModelFramework !== null ? { model_framework: finalModelFramework } : {}),
+             ingestionDocumentId: id,
+             isPublished: true
           },
           create: {
              id: questionId,
+             isPublished: true,
              paper_id: `paper-${final_q_paper_code.toLowerCase()}`,
              paper_code: final_q_paper_code,
              year,
@@ -690,7 +693,8 @@ router.post('/document/:id/publish', async (req, res) => {
              question_hi: q.questionHi || null,
              topic_id: finalTopicId,
              topic_title: finalTopicTitle,
-             model_framework: finalModelFramework
+             model_framework: finalModelFramework,
+             ingestionDocumentId: id
           }
         });
         publishedCount++;
@@ -779,58 +783,60 @@ router.post('/pyqs/:id/unpublish', async (req, res) => {
          return res.status(400).json({ error: 'No job or resultJson found for this document.' });
       }
 
-      let year, rawPaperCode, questionNumbers = [];
-      try {
-        const intel = JSON.parse(latestJob.resultJson);
-        
-        // Try to get from resultJson first (if available)
-        year = parseInt(intel.identification?.year?.value);
-        rawPaperCode = intel.identification?.paper?.value;
-        
-        // Fallback to originalFileName (e.g., "2026_GS1.pdf")
-        if (!year || !rawPaperCode) {
-           const match = doc.originalFileName.match(/^(\d{4})_([A-Za-z0-9-]+)/);
-           if (match) {
-               year = parseInt(match[1]);
-               rawPaperCode = match[2];
-           }
-        }
-        
-        if (intel.questions && Array.isArray(intel.questions)) {
-            questionNumbers = intel.questions.map(q => parseInt(q.questionNumber)).filter(n => !isNaN(n));
-        }
-      } catch (e) {
-        console.error('Failed to parse resultJson for unpublish', e);
-        return res.status(500).json({ error: 'Failed to parse intelligence result' });
-      }
-
-      if (!year || !rawPaperCode || questionNumbers.length === 0) {
-         return res.status(400).json({ error: 'Could not extract year, paper code, or questions from the document.' });
-      }
-
-      // The DB might have GS1 or GS-I, so we search for both or exactly what was published.
-      // We will search for both rawPaperCode and normalized paper code just to be safe.
-      const normalizePaperCode = (code) => {
-          if (!code) return code;
-          let c = code.toUpperCase().replace(/\s+/g, '');
-          if (c === 'GS1' || c === 'GSI') return 'GS-I';
-          if (c === 'GS2' || c === 'GSII') return 'GS-II';
-          if (c === 'GS3' || c === 'GSIII') return 'GS-III';
-          if (c === 'GS4' || c === 'GSIV') return 'GS-IV';
-          return code;
-      };
-
-      const normalizedPcode = normalizePaperCode(rawPaperCode);
-      const possiblePaperCodes = Array.from(new Set([rawPaperCode, normalizedPcode])).filter(Boolean);
-
-      const existingPyqs = await prisma.pyqQuestion.findMany({
+      let existingPyqs = await prisma.pyqQuestion.findMany({
           where: {
-              year: year,
-              paper_code: { in: possiblePaperCodes },
-              question_number: { in: questionNumbers },
+              ingestionDocumentId: id,
               isPublished: true
           }
       });
+
+      // Legacy fallback if no questions found by ingestionDocumentId
+      if (existingPyqs.length === 0) {
+          let year, rawPaperCode, questionNumbers = [];
+          try {
+            const intel = JSON.parse(latestJob.resultJson);
+            year = parseInt(intel.identification?.year?.value);
+            rawPaperCode = intel.identification?.paper?.value;
+            
+            if (!year || !rawPaperCode) {
+               const match = doc.originalFileName.match(/^(\d{4})_([A-Za-z0-9-]+)/);
+               if (match) {
+                   year = parseInt(match[1]);
+                   rawPaperCode = match[2];
+               }
+            }
+            
+            if (intel.questions && Array.isArray(intel.questions)) {
+                questionNumbers = intel.questions.map(q => parseInt(q.questionNumber)).filter(n => !isNaN(n));
+            }
+          } catch (e) {
+            console.error('Failed to parse resultJson for legacy unpublish fallback', e);
+          }
+
+          if (year && rawPaperCode && questionNumbers.length > 0) {
+              const normalizePaperCode = (code) => {
+                  if (!code) return code;
+                  let c = code.toUpperCase().replace(/\s+/g, '');
+                  if (c === 'GS1' || c === 'GSI') return 'GS-I';
+                  if (c === 'GS2' || c === 'GSII') return 'GS-II';
+                  if (c === 'GS3' || c === 'GSIII') return 'GS-III';
+                  if (c === 'GS4' || c === 'GSIV') return 'GS-IV';
+                  return code;
+              };
+
+              const normalizedPcode = normalizePaperCode(rawPaperCode);
+              const possiblePaperCodes = Array.from(new Set([rawPaperCode, normalizedPcode])).filter(Boolean);
+
+              existingPyqs = await prisma.pyqQuestion.findMany({
+                  where: {
+                      year: year,
+                      paper_code: { in: possiblePaperCodes },
+                      question_number: { in: questionNumbers },
+                      isPublished: true
+                  }
+              });
+          }
+      }
 
       if (existingPyqs.length === 0) {
           // Document was marked PUBLISHED but no active PYQs found. Transition it anyway.
@@ -838,7 +844,12 @@ router.post('/pyqs/:id/unpublish', async (req, res) => {
             await tx.ingestionDocument.update({ where: { id }, data: { status: 'UNPUBLISHED' } });
             await tx.ingestionJob.update({ where: { id: latestJob.id }, data: { status: 'UNPUBLISHED' } });
           });
-          return res.status(404).json({ error: 'No published PyQ questions are associated with this document.' });
+          return res.json({ 
+             success: true,
+             unpublishedCount: 0,
+             documentId: id,
+             message: 'Removed 0 questions from Mains 360.'
+          });
       }
 
       await prisma.$transaction(async (tx) => {
@@ -866,7 +877,7 @@ router.post('/pyqs/:id/unpublish', async (req, res) => {
          success: true,
          unpublishedCount: existingPyqs.length,
          documentId: id,
-         message: 'Document successfully removed from Mains 360.' 
+         message: `Removed ${existingPyqs.length} questions from Mains 360.` 
       });
     }
     
@@ -1019,8 +1030,8 @@ router.post('/document/:id/blueprint-proposal', async (req, res) => {
        return res.status(400).json({ error: 'Question not found' });
     }
 
-    const paperCode = intel.identification?.paper?.value;
-    const year = intel.identification?.year?.value;
+    const paperCode = req.body.paperCode || intel.identification?.paper?.value;
+    const year = req.body.year || intel.identification?.year?.value;
 
     const proposal = await generateBlueprintProposal({
       questionText: question.questionEn || question.questionHi,
